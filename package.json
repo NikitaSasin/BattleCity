@@ -1,0 +1,31 @@
+{
+  "name": "battlecity",
+  "version": "1.0.0",
+  "description": "battle city for ihar",
+  "main": "gulpfile.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/NikitaSasin/BattleCity.git"
+  },
+  "author": "nsasin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/NikitaSasin/BattleCity/issues"
+  },
+  "homepage": "https://github.com/NikitaSasin/BattleCity#readme",
+  "devDependencies": {
+    "browser-sync": "^2.18.13",
+    "gulp": "^3.9.1",
+    "gulp-cssnano": "^2.1.2",
+    "gulp-imagemin": "^3.3.0",
+    "gulp-rigger": "^0.5.8",
+    "gulp-rimraf": "^0.2.1",
+    "gulp-sourcemap": "^1.0.1",
+    "gulp-stylus": "^2.6.0",
+    "gulp-uglify": "^3.0.0",
+    "gulp-watch": "^4.3.11"
+  }
+}
