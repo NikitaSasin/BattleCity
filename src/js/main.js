@@ -1,81 +1,97 @@
 ;(function() {
-  var canvas = document.getElementById('canvas');
-  var context = canvas.getContext('2d');
+  function init() {
+    var canvas = document.getElementById('canvas');
+    var context = canvas.getContext('2d');
+
+    var cellSize = 24;
+    var mapSizeX = 12;
+    var mapSizeY = 12;
+
+    canvas.width = mapSizeX * cellSize;
+    canvas.height = mapSizeY * cellSize;
+
+    var map = ([
+      [1,1,1,1,1,1,1,1,1,1,1,1],
+      [1,0,0,0,0,0,1,1,1,1,1,1],
+      [1,0,1,1,1,0,1,0,0,0,0,0],
+      [1,0,1,0,1,0,1,0,1,1,1,1],
+      [1,0,1,0,1,0,1,0,1,0,0,1],
+      [1,0,1,0,1,0,1,0,1,0,0,1],
+      [1,0,1,0,1,0,0,0,1,0,0,1],
+      [1,0,1,0,1,1,1,1,1,0,0,1],
+      [1,0,1,0,0,0,0,0,0,0,0,1],
+      [1,0,1,0,0,0,0,0,0,0,0,1],
+      [1,0,1,0,0,0,0,0,0,0,0,1],
+      [1,0,1,1,1,1,1,1,1,1,1,1],
+    ]);
+
+    function Tank (w, h, x, y, img) {
+      this.w = w;
+      this.h = h;
+      this.x = x;
+      this.y = y;
+      this.i = 2;
+      this.img = img;
+    }
+
+    tankObj = new Tank(cellSize, cellSize, cellSize, (mapSizeY - 1) * cellSize, imgTank);
+
+    function draw() {
+      context.clearRect(0, 0, canvas.width, canvas.height);
+      context.fillStyle = '#111';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.save();
+
+      for (var y = 0; y < mapSizeY; y++) {
+        for (var x = 0; x < mapSizeX; x++) {
+          switch (map[y][x]) {
+            case 0:
+              break;
+            case 1:
+              context.drawImage(imgBrick, 0, 0, cellSize, cellSize, x * cellSize, y * cellSize, cellSize, cellSize);
+              break;
+          }
+        }
+      }
+      context.restore();
+
+      context.drawImage(tankObj.img, 2 * cellSize * tankObj.i, 0, cellSize * 2, cellSize * 2, tankObj.x, tankObj.y, tankObj.w, tankObj.h);
+    }
+    draw();
+
+    window.addEventListener('keydown', function (e) {
+      console.log(e.keyCode);
+      switch (e.keyCode) {
+        case 87:
+          tankObj.y -= cellSize;
+          tankObj.i = 2;
+          draw();
+          break;
+        case 68:
+          tankObj.x += cellSize;
+          tankObj.i = 0;
+          draw();
+          break;
+        case 83:
+          tankObj.y += cellSize;
+          tankObj.i = 3;
+          draw();
+          break;
+        case 65:
+          tankObj.x -= cellSize;
+          tankObj.i = 1;
+          draw();
+          break;
+      }
+    });
+  }
 
   var imgBrick = new Image();
   imgBrick.src = 'img/brick.png';
-  var imgSteel = new Image();
-  imgSteel.src = 'img/steel.png';
-  var imgWater = new Image();
-  imgWater.src = 'img/water.png';
-  var imgForest = new Image();
-  imgForest.src = 'img/forest.png';
-
-  var iCellSize = 24;
-  var iXCnt = 26; // количество клеток X
-  var iYCnt = 26; // количество клеток Y
-
-  canvas.width = iXCnt * iCellSize;
-  canvas.height = iYCnt * iCellSize;
-
-  var amap = ([
- [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0],
- [0, 0, 1, 1, 4, 4, 4, 4, 0, 0, 2, 2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
- [0, 0, 1, 1, 4, 4, 4, 4, 0, 0, 2, 2, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 4, 4, 4, 4, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 0, 0, 2, 2, 0, 0],
- [0, 0, 0, 0, 4, 4, 4, 4, 1, 1, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 0, 0, 2, 2, 0, 0],
- [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 1, 1, 0, 0, 0, 0],
- [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 4, 4, 4, 4, 1, 1, 0, 0, 0, 0],
- [0, 0, 2, 2, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
- [0, 0, 2, 2, 0, 0, 0, 0, 4, 4, 4, 4, 0, 0, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
- [3, 3, 3, 3, 1, 1, 0, 0, 4, 4, 4, 4, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
- [3, 3, 3, 3, 1, 1, 0, 0, 4, 4, 4, 4, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0],
- [3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 2],
- [3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 2],
- [0, 0, 1, 1, 4, 4, 4, 4, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
- [0, 0, 1, 1, 4, 4, 4, 4, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
- [2, 2, 0, 0, 4, 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 0, 0, 1, 1, 0, 0],
- [2, 2, 0, 0, 4, 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 3, 3, 3, 3, 0, 0, 1, 1, 0, 0],
- [0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 4, 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 0, 0],
- [0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 0, 0, 4, 4, 4, 4, 3, 3, 3, 3, 4, 4, 4, 4, 0, 0],
- [0, 0, 0, 0, 0, 0, 2, 2, 3, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 4, 4, 4, 4, 0, 0],
- [0, 0, 0, 0, 0, 0, 2, 2, 3, 3, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 4, 4, 4, 4, 0, 0],
- [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
- [0, 0, 0, 0, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
- [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 2, 2, 0, 0, 0, 0],
- [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 1, 2, 2, 0, 0, 0, 0]
- ]);
-function draw() {
-  context.clearRect(0, 0, canvas.width, canvas.height);
-
-  context.fillStyle = '#111';
-  context.fillRect(0, 0, canvas.width, canvas.height);
-
-  context.save();
-   // Проход по массиву
-   for (var y = 0; y < iYCnt; y++) {
-     for (var x = 0; x < iXCnt; x++) {
-       switch (amap[y][x]) {
-         case 0: // пропуск
-           break;
-         case 1: // Русием кирпичный блок
-           context.drawImage(imgBrick, 0, 0, iCellSize, iCellSize, x * iCellSize, y * iCellSize, iCellSize, iCellSize);
-           break;
-         case 2: // Рисуем стальной блок
-           context.drawImage(imgSteel, 0, 0, iCellSize, iCellSize, x * iCellSize, y * iCellSize, iCellSize, iCellSize);
-           break;
-         case 3: // Рисуем лес
-           context.drawImage(imgForest, 0, 0, iCellSize, iCellSize, x * iCellSize, y * iCellSize, iCellSize, iCellSize);
-           break;
-         case 4: // Рисуем воду
-           context.drawImage(imgWater, 0, 0, iCellSize, iCellSize, x * iCellSize, y * iCellSize, iCellSize, iCellSize);
-           break;
-       }
-     }
-   }
-
-   context.restore();
-}
-setInterval(draw, 40);
+  var imgTank = new Image();
+  imgTank.src = 'img/tank.png';
+  var tankObj;
+  window.addEventListener('load', function() {
+    init();
+  });
 })();
