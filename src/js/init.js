@@ -1,7 +1,7 @@
 ;(function() {
   function createMap() {
-    var x = 12;
-    var y = 12;
+    var x = 30;
+    var y = 30;
 
     var rightBorder = [];
     var bottomBorder = [];
@@ -15,11 +15,9 @@
       if (i == 0) {
         for (var j = 0; j < x; j++) {
           mass[i][j] = j + 1;
-          rightBorder[i][j] = 0;
-          bottomBorder[i][j] = 0;
         }
       }
-      else if (i == j-1) {
+      else if (i == y - 1) {
         for (var j = 0; j < x; j++) {
           mass[i][j] = mass[i-1][j];
           rightBorder[i][j] = rightBorder[i-1][j];
@@ -33,51 +31,53 @@
             nextArr = mass[i][j+1];
           }
           mass[i][j+1] = mass[i][j];
-          alert(mass[i]);
-          alert(rightBorder[i]);
         }
         break;
       }
       else {
         for (var j = 0; j < x; j++) {
           if (bottomBorder[i-1][j]) {
-            mass[i][j] = j + 1;
+            mass[i][j] = i * x + j;
           }
           else {
             mass[i][j] = mass[i-1][j];
           }
-          rightBorder[i][j] = 0;
-          bottomBorder[i][j] = 0;
         }
       }
 
       for (j = 0; j < x; j++) {
         //right border
         rightBorder[i][j] = Math.floor(2 * Math.random());
+        // bottom border
         bottomBorder[i][j] = Math.floor(2 * Math.random());
+
         if(mass[i][j] == mass[i][j+1]) {
           rightBorder[i][j] = 1;
         }
         if(rightBorder[i][j] == 0) {
           mass[i][j+1] = mass[i][j];
-
         }
       }
 
       for (j = 0; j < x; j++) {
         //bottom border check
-        var pos = 0;
-        for (var k = 0; k < j; k++) {
-          if (bottomBorder[i][k] == 0 && mass[i][j] == mass[i][k]) {
+        var pos = l = 0;
+        for (var k = 0; k < x; k++) {
+          if (bottomBorder[i][k] == 0 && (mass[i][j] == mass[i][k])) {
             pos++;
           }
+          else {
+            l++;
+          }
         }
-        if(!pos) {
+        if(pos == 0) {
           bottomBorder[i][j] = 0;
         }
-
+      console.log(mass)
       }
-
+    // var mascopy = mass[i];
+    // console.log(mascopy);
+    // mascopy = [];
     }
     return {
       mass: mass,
@@ -91,8 +91,8 @@
     var context = canvas.getContext('2d');
     var m = createMap();
     var cellSize = 24;
-    var mapSizeX = 12;
-    var mapSizeY = 12;
+    var mapSizeX = 30;
+    var mapSizeY = 30;
 
     canvas.width = mapSizeX * cellSize;
     canvas.height = mapSizeY * cellSize;
@@ -116,10 +116,18 @@
 
       var right = m.rightBorder;
       var bottom = m.bottomBorder;
-      console.log(right);
-      console.log(bottom);
 
       for (var y = 0; y < mapSizeY; y++) {
+        for (var j = 0; j < mapSizeX; j++) {
+          context.drawImage(imgBrick, 0, 0, 2, cellSize, 0, y * cellSize, 2, cellSize)
+          context.drawImage(imgBrick, 0, 0, 2, cellSize, mapSizeX * (cellSize) - 2, y * cellSize, 2, cellSize)
+        }
+        if (y == 0) {
+            for (var j = 0; j < mapSizeX; j++) {
+              context.drawImage(imgBrick, 0, 0, 2, cellSize, j * cellSize, y, cellSize, 2)
+            }
+        }
+
         for (var x = 0; x < mapSizeX; x++) {
           switch (right[y][x]) {
             case 0:
