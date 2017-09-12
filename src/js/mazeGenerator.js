@@ -1,4 +1,4 @@
-var mazeGenerator = function (mazeWidth, mazeHeight) {
+var MazeGenerator = function (mazeWidth, mazeHeight) {
   this.mazeWidth = mazeWidth;
   this.mazeHeight = mazeHeight;
 
@@ -9,7 +9,7 @@ var mazeGenerator = function (mazeWidth, mazeHeight) {
   this.init();
 };
 
-mazeGenerator.prototype = (function () {
+MazeGenerator.prototype = (function () {
   var createRow = function (row) {
     this.setOfNumbers[row] = [];
     this.rightBorder[row] = [];
@@ -19,7 +19,7 @@ mazeGenerator.prototype = (function () {
   var createFirstSet = function (row) {
     var i = 0;
     for (i = 0; i < this.mazeWidth; i++) {
-      this.setOfNumbers[row] = i;
+      this.setOfNumbers[row][i] = i;
     }
   };
 
@@ -54,6 +54,7 @@ mazeGenerator.prototype = (function () {
       }
       this.setOfNumbers[row][i + 1] = this.setOfNumbers[row][i];
     }
+    return true;
   };
 
   var generateRandomWall = function () {
@@ -78,8 +79,7 @@ mazeGenerator.prototype = (function () {
 
       // Check set isolation. If set has open border bottom (== 0), set is not isolated
       for (s = 0; s < this.mazeWidth; s++) {
-        if (this.bottomBorder[row][s] === 0 &&
-            this.setOfNumbers[row][s] === this.setOfNumbers[row][x]) {
+        if (this.bottomBorder[row][s] === 0 && this.setOfNumbers[row][s] === this.setOfNumbers[row][x]) {
           setIsIsolated += 1;
         }
       }
@@ -103,6 +103,7 @@ mazeGenerator.prototype = (function () {
         createFirstSet.call(this, i);
       } else if (i === this.mazeHeight - 1) {
         createLastSet.call(this, i);
+        return;
       } else {
         createSet.call(this, i);
       }

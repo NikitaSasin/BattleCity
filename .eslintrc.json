@@ -4,5 +4,4 @@
     "func-names": ["error", "never"],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }]
   }
-
 }
