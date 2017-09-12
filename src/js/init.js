@@ -1,116 +1,80 @@
-;(function() {
+function game(mapSizeX, mapSizeY) {
+  this.canvas = document.getElementById('canvas');
+  this.context = this.canvas.getContext('2d');
+  this.cellSize = 24;
+  this.mapSizeX = mapSizeX;
+  this.mapSizeY = mapSizeY;
+  this.imgBrick = new Image();
+  this.imgBrick.src = "img/brick.png";
 
-  function init() {
-    var canvas = document.getElementById('canvas');
-    var context = canvas.getContext('2d');
-    var m = createMap();
-    var cellSize = 24;
-    var mapSizeX = 30;
-    var mapSizeY = 30;
+  this.maze = new mazeGenerator(mapSizeX, mapSizeY);
 
-    canvas.width = mapSizeX * cellSize;
-    canvas.height = mapSizeY * cellSize;
+  this.init();
+}
 
-    function Tank (w, h, x, y, img) {
-      this.w = w;
-      this.h = h;
-      this.x = x;
-      this.y = y;
-      this.i = 2;
-      this.img = img;
-    }
+game.prototype = (function () {
 
-    tankObj = new Tank(cellSize, cellSize, cellSize, (mapSizeY - 1) * cellSize, imgTank);
-
-    function draw() {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      context.fillStyle = '#fff';
-      context.fillRect(0, 0, canvas.width, canvas.height);
-      context.save();
-
-      var right = m.rightBorder;
-      var bottom = m.bottomBorder;
-
-      for (var y = 0; y < mapSizeY; y++) {
-        for (var j = 0; j < mapSizeX; j++) {
-          context.drawImage(imgBrick, 0, 0, 2, cellSize, 0, y * cellSize, 2, cellSize)
-          context.drawImage(imgBrick, 0, 0, 2, cellSize, mapSizeX * (cellSize) - 2, y * cellSize, 2, cellSize)
-        }
-        if (y == 0) {
-            for (var j = 0; j < mapSizeX; j++) {
-              context.drawImage(imgBrick, 0, 0, 2, cellSize, j * cellSize, y, cellSize, 2)
-            }
-        }
-
-        for (var x = 0; x < mapSizeX; x++) {
-          switch (right[y][x]) {
-            case 0:
-              break;
-            case 1:
-              context.drawImage(imgBrick, 0, 0, 2, cellSize, (x + 1) * cellSize - 2, y * cellSize, 2, cellSize);
-              break;
-          }
-          switch (bottom[y][x]) {
-            case 0:
-              break;
-            case 1:
-              context.drawImage(imgBrick, 0, 0, cellSize, 2, x * cellSize, (y + 1) * cellSize - 2, cellSize, 2);
-              break;
-          }
-        }
-      }
-      context.restore();
-
-
-    }
-    draw();
-
-    window.addEventListener('keydown', function (e) {
-      var massX = tankObj.x / cellSize;
-      var massY = tankObj.y / cellSize;
-
-      switch (e.keyCode) {
-        case 87: //up
-          if(!gameMap[massY - 1][massX] && (gameMap[massY - 1][massX] >= 0)) {
-            tankObj.y -= cellSize;
-          }
-          tankObj.i = 2;
-          draw();
-          break;
-
-        case 68: //right
-          if(!gameMap[massY][massX + 1] && gameMap[massY][massX + 1] <= gameMap[massY].length) {
-            tankObj.x += cellSize;
-          }
-          tankObj.i = 0;
-          draw();
-          break;
-
-        case 83: //down
-          if(!gameMap[massY + 1][massX] && gameMap[massY + 1][massX] <= gameMap.length) {
-            tankObj.y += cellSize;
-          }
-          tankObj.i = 3;
-          draw();
-          break;
-
-        case 65: //left
-          if(!gameMap[massY][massX - 1] && gameMap[massY][massX - 1] >= 0) {
-            tankObj.x -= cellSize;
-          }
-          tankObj.i = 1;
-          draw();
-          break;
-      }
-    });
+  var setCanvas = function () {
+    this.canvas.width = this.mapSizeX * this.cellSize;
+    this.canvas.height = this.mapSizeY * this.cellSize;
   }
 
-  var imgBrick = new Image();
-  imgBrick.src = 'img/brick.png';
-  var imgTank = new Image();
-  imgTank.src = 'img/tank.png';
-  var tankObj;
-  window.addEventListener('load', function() {
-    init();
-  });
-})();
+  var clearCanvas = function () {
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.context.fillStyle = '#fff';
+    this.context.fillRect(0, 0, this.canvas.width, this.canvas.height);
+  }
+
+  var drawPerimetr = function (row) {
+    for (var j = 0; j < this.mapSizeX; j++) {
+      this.context.drawImage(this.imgBrick, 0, 0, 2, this.cellSize, 0, row * this.cellSize, 2, this.cellSize);
+      this.context.drawImage(this.imgBrick, 0, 0, 2, this.cellSize, this.mapSizeX * (this.cellSize) - 2, row * this.cellSize, 2, this.cellSize);
+    }
+    if (row == 0) {
+      for (var j = 0; j < this.mapSizeX; j++) {
+        this.context.drawImage(this.imgBrick, 0, 0, 2, this.cellSize, j * this.cellSize, row, this.cellSize, 2);
+      }
+    }
+    if (row == this.mapSizeY - 1) {
+      for (var j = 0; j < this.mapSizeX; j++) {
+        this.context.drawImage(this.imgBrick, 0, 0, 2, this.cellSize, j * this.cellSize, this.mapSizeY * this.cellSize - 2, this.cellSize, 2);
+      }
+    }
+  };
+
+  var drawMaze = function (row) {
+    for (var i = 0; i < this.mapSizeX; i++) {
+      switch (this.maze.rightBorder[row][i]) {
+        case 0:
+          break;
+        case 1:
+          this.context.drawImage(this.imgBrick, 0, 0, 2, this.cellSize, (i + 1) * this.cellSize - 2, row * this.cellSize, 2, this.cellSize);
+          break;
+      }
+      switch (this.maze.bottomBorder[row][i]) {
+        case 0:
+          break;
+        case 1:
+          this.context.drawImage(this.imgBrick, 0, 0, this.cellSize, 2, i * this.cellSize, (row + 1) * this.cellSize - 2, this.cellSize, 2);
+          break;
+      }
+    }
+  };
+
+  var init = function () {
+    setCanvas.call(this);
+    clearCanvas.call(this);
+
+    this.context.save();
+
+    for (var i = 0; i < this.mapSizeY; i++) {
+      drawPerimetr.call(this, i);
+      drawMaze.call(this, i);
+    }
+    this.context.restore();
+  }
+
+  return {
+    init: init
+  }
+}());
